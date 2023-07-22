@@ -108,6 +108,7 @@ const VideoRoom = () => {
     // isReady가 true일 경우에만 실행하고 false인 경우 getRoomData()를 시행
     if (isReady) {
       getUserMedia({video: true, audio: true}, (stream) =>{
+        console.log(stream);
         myStream.current = stream;
         // 나의 스트림을 비디오에 set
         for (const ref of videoRefs.current) {
