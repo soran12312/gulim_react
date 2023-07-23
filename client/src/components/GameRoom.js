@@ -1,4 +1,26 @@
 
+const cellStyle = {
+    padding: '10px',
+    fontSize: '14px'
+};
+
+const buttonStyle = {
+    margin: '5px',
+    padding: '5px',
+    backgroundColor: '#4CAF50', 
+    border: 'none',
+    color: 'white',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'inline-block',
+    fontSize: '12px',
+    cursor: 'pointer'
+};
+
+const linkStyle = {
+    color: 'black',
+    textDecoration: 'none'
+};
 
 const GameRoom = (props) => {
     const room = props.room;
@@ -13,27 +35,24 @@ const GameRoom = (props) => {
         return (
         
             <tr>
-                <td>
+                <td style={cellStyle}>
                     {room.nickname}
                 </td>
-                <td>
+                <td style={cellStyle}>
                     <a onClick={() => goGameDetail(room.room_num)}>
                     <h3>{room.room_name}</h3>
                     <br/>
                     <span>{room.plot}</span>
                     </a>
                 </td>
-                <td>
-                    {room.tag_contents && room.tag_contents.map(tag_content => <button className="hashtag" onClick={() => selectHashtag(tag_content)}>{tag_content}</button>)}
-                    <br/>
-                    <span>현재인원 : {room.curr_member}/{room.max_member}</span>
-                    <br/>
-                    <span>다음 게임 일시 : {!room.next_play_date && "미정"}{room.next_play_date && room.next_play_date}</span>
-                    <br/>
-                    <span>예상 기간 : {!room.period && "미정"}{room.period && room.period+"주"}</span>
-                    <br/>
-                    {room.video===0 && <button className="video" onClick={() => setVideoAudio("video")}>영상</button>}
-                    {room.video===1 && <button className="audio" onClick={() => setVideoAudio("audio")}>음성</button>}
+                <td style={cellStyle}>
+                    {room.tag_contents && room.tag_contents.map(tag_content => 
+                    <button style={buttonStyle} className="hashtag" onClick={() => selectHashtag(tag_content)}>{tag_content}</button>)}
+                    <p>현재인원 : {room.curr_member}/{room.max_member}</p>
+                    <p>다음 게임 일시 : {!room.next_play_date && "미정"}{room.next_play_date && room.next_play_date}</p>
+                    <p>예상 기간 : {!room.period && "미정"}{room.period && room.period+"주"}</p>
+                    {room.video===0 && <button className="video" style={buttonStyle} onClick={() => setVideoAudio("video")}>영상</button>}
+                    {room.video===1 && <button className="audio" style={buttonStyle} onClick={() => setVideoAudio("audio")}>음성</button>}
                 </td>
             </tr>
             

@@ -2,6 +2,19 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import GameRoom from "./GameRoom";
 
+const buttonStyle = {
+    margin: '5px',
+    padding: '10px',
+    backgroundColor: '#4CAF50', /* Green */
+    border: 'none',
+    color: 'white',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'inline-block',
+    fontSize: '16px',
+    transitionDuration: '0.4s',
+    cursor: 'pointer'
+  };
 
 const GameList = () => {
 
@@ -178,18 +191,23 @@ const GameList = () => {
 
 
     return (
-        <div>
-            <button onClick={createRoom}>방 만들기</button>
-            <br/>
-            <button onClick={selectAllRooms}>전체 방 보기</button>
-            <button onClick={selectRecruitRooms}>모집중인 방만 보기</button>
-            <button onClick={selectWatchableRooms}>관전가능한 방만 보기</button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ marginBottom: '20px' }}>
+                <button onClick={createRoom} style={buttonStyle}>방 만들기</button>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+                <button onClick={selectAllRooms} style={buttonStyle}>전체 방 보기</button>
+                <button onClick={selectRecruitRooms} style={buttonStyle}>모집중인 방만 보기</button>
+                <button onClick={selectWatchableRooms} style={buttonStyle}>관전가능한 방만 보기</button>
+            </div>
 
-            <table>
+            <table style={{ marginBottom: '20px' }}>
                 <thead>
-                    <td>마스터</td>
-                    <td>이름 및 소개</td>
-                    <td>게임정보</td>
+                    <tr>
+                        <td>마스터</td>
+                        <td>이름 및 소개</td>
+                        <td>게임정보</td>
+                    </tr>
                 </thead>
                 {selectedRooms && selectedRooms.sort((a, b) => new Date(b.create_date) - new Date(a.create_date)).map(room => 
                 <GameRoom key={room.room_num} room={room} setVideoAudio={setVideoAudio} selectHashtag={selectHashtag} goGameDetail={goGameDetail}/>)}
@@ -200,7 +218,7 @@ const GameList = () => {
                     <option value={"room_name"}>제목</option>
                 </select>
                 <input type="text" onChange={handleInputChange} onKeyDown={enterKeyPress}></input>
-                <button>검색</button>
+                <button style={buttonStyle}>검색</button>
             </form>
         </div>
     )
