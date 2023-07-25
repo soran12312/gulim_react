@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const Sales = (props) => {
+const Sales = () => {
   const [isSale, setSale] = useState([]);
   const [isReady, setIsReady] = useState(false);
-  const [isProduct,setProduct] = useState(0);
-
 
 
     const pocket = () => {
