@@ -72,7 +72,7 @@ const GameRoom = (props) => {
                     {room.nickname}
                 </td>
                 <td style={cellStyle}>
-                    <a onClick={() => goGameDetail(room.room_num)}>
+                    <a style={{cursor: 'pointer'}} onClick={() => goGameDetail(room.room_num)}>
                     <h3>{room.room_name}</h3>
                     <br/>
                     <span>{room.plot}</span>

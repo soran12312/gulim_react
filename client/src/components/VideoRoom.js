@@ -8,6 +8,7 @@ import { addUser, removeUser } from '../reducer/roomReducer';
 import Chatting from './Chatting';
 import CenterLoc from './CenterLoc';
 import Inventory from './Inventory';
+import StatAndSkill from './StatAndSkill';
 
 const styles = {
   video: {
@@ -260,8 +261,22 @@ const VideoRoom = () => {
             console.log("peers :",peers);
         }; // end of connectToNewUser
 
-        
+        // 인벤토리, 스킬, 스텟 변화 시 db에서 방정보 다시 가져옴
+        socket.current.on("refrash", () => {
+          refrashRoomData();
+        });
 
+        // 방정보 새로 가져오기
+        const refrashRoomData = async () => {
+          const link = `https://192.168.0.68:8080/chatData/room/${room}`;
+          try {
+            const response = await axios.get(link);
+            setUserData(response.data);
+            console.log("refrash");
+          } catch (error) {
+            console.error(error);
+          }
+        };
 
       });
 
@@ -523,6 +538,18 @@ const VideoRoom = () => {
     textSave.current.download = 'transcribed.txt';
   }
 
+  // 방정보 새로 가져오기
+  const refrashRoomData = async () => {
+    const link = `https://192.168.0.68:8080/chatData/room/${room}`;
+    try {
+      const response = await axios.get(link);
+      setUserData(response.data);
+      console.log("refrash");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
 if(isReady){
 
@@ -579,11 +606,13 @@ if(isReady){
               <button>?</button>
             </td>
             }
-            <td>다른사람 스텟, 스킬창 영역</td>
-            {!isMaster && <td>스텟, 스킬창영역</td>}
+            <td>다른사람 스텟&스킬
+              <StatAndSkill socket={socket} userData={userData} userId={mouseHoverUser} isMaster={isMaster} refrashRoomData={refrashRoomData}/>
+            </td>
+            {!isMaster && <td>나의 스텟&스킬<StatAndSkill socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/></td>}
             <td>인벤토리
-              {isMaster && <Inventory userData={userData} userId={mouseHoverUser}/>}
-              {!isMaster && <Inventory userData={userData} userId={userId}/>}
+              {isMaster && <Inventory socket={socket} userData={userData} userId={mouseHoverUser} refrashRoomData={refrashRoomData}/>}
+              {!isMaster && <Inventory socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/>}
             </td>
             <td colSpan={2}><Chatting socket={socket}/></td>
           </tr>

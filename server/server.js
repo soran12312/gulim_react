@@ -78,6 +78,11 @@ io.on("connection", (socket) => {
         socket.broadcast.to(roomId).emit("newMessage", userId, message);
       });
 
+      socket.on("refrash", () => {
+        console.log("refrash");
+        socket.broadcast.to(roomId).emit("refrash");
+      });
+
       socket.on("giveDice", (streamId, diceFace, diceCount) => {
         var user = findUserByStreamId(streamId);
         var diceRoller = users[user.roomId][user.userId].socketId;
