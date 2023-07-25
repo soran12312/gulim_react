@@ -1,20 +1,53 @@
 
 const cellStyle = {
     padding: '10px',
+    fontSize: '14px',
+    textAlign: 'center',
+    padding : '20px'
+};
+const cellStyle2 = {
+    padding: '10px',
     fontSize: '14px'
 };
 
 const buttonStyle = {
     margin: '5px',
     padding: '5px',
-    backgroundColor: '#4CAF50', 
+    backgroundColor: 'rgba(141,113,234,0.8)', 
     border: 'none',
     color: 'white',
     textAlign: 'center',
     textDecoration: 'none',
     display: 'inline-block',
     fontSize: '12px',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    borderRadius : '15px'
+};
+const buttonStyle2 = {
+    margin: '5px',
+    padding: '5px',
+    backgroundColor: 'rgba(113,218,234,0.8)', 
+    border: 'none',
+    color: 'white',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'inline-block',
+    fontSize: '12px',
+    cursor: 'pointer',
+    borderRadius : '15px'
+};
+const buttonStyle3 = {
+    margin: '5px',
+    padding: '5px',
+    backgroundColor: 'rgba(234,198,113,0.8)', 
+    border: 'none',
+    color: 'white',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'inline-block',
+    fontSize: '12px',
+    cursor: 'pointer',
+    borderRadius : '15px'
 };
 
 const linkStyle = {
@@ -45,14 +78,14 @@ const GameRoom = (props) => {
                     <span>{room.plot}</span>
                     </a>
                 </td>
-                <td style={cellStyle}>
+                <td style={cellStyle2}>
                     {room.tag_contents && room.tag_contents.map(tag_content => 
                     <button style={buttonStyle} className="hashtag" onClick={() => selectHashtag(tag_content)}>{tag_content}</button>)}
                     <p>현재인원 : {room.curr_member}/{room.max_member}</p>
                     <p>다음 게임 일시 : {!room.next_play_date && "미정"}{room.next_play_date && room.next_play_date}</p>
                     <p>예상 기간 : {!room.period && "미정"}{room.period && room.period+"주"}</p>
-                    {room.video===0 && <button className="video" style={buttonStyle} onClick={() => setVideoAudio("video")}>영상</button>}
-                    {room.video===1 && <button className="audio" style={buttonStyle} onClick={() => setVideoAudio("audio")}>음성</button>}
+                    {room.video===0 && <button className="video" style={buttonStyle2} onClick={() => setVideoAudio("video")}>영상</button>}
+                    {room.video===1 && <button className="audio" style={buttonStyle3} onClick={() => setVideoAudio("audio")}>음성</button>}
                 </td>
             </tr>
             

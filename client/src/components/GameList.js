@@ -2,10 +2,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import GameRoom from "./GameRoom";
 
+// 방만들기, 전체방보기, 모집중인 방만보기, 관전가능한 방만 보기, 검색 버튼 css
 const buttonStyle = {
     margin: '5px',
     padding: '10px',
-    backgroundColor: '#4CAF50', /* Green */
+    backgroundColor: '#812323', 
     border: 'none',
     color: 'white',
     textAlign: 'center',
@@ -13,8 +14,21 @@ const buttonStyle = {
     display: 'inline-block',
     fontSize: '16px',
     transitionDuration: '0.4s',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    borderRadius : '8px'
   };
+
+  //gamelist전체 background 컬러
+  const background = {
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center' , 
+    borderRadius : 'size / 2' , 
+    shadowColor : 'rgba(217,217,217,0.7)',
+    shadowOffset : {width : '10', height : '10'}, 
+    background:' rgba(217,217,217,0.7)'
+};
+
 
 const GameList = () => {
 
@@ -26,11 +40,16 @@ const GameList = () => {
 
     useEffect(() => {
         const getList = async () => {
+            //방목록 반환하는 API의 주소
             const link = "https://192.168.0.68:8080/game/play/getList"
             try{
+                //기다렸다가 응답도착하면
                 const response = await axios.get(link);
+                //rooms에 방목록 데이터 초기값으로 설정
                 setRooms(response.data);
+                //selectrooms에 방목록 데이터 설정(모든방이 선택된 상태)
                 setSelectedRooms(response.data);
+                //더이상 데이터 가져오지 않음
                 setIsReady(true);
 
             }catch(err){
@@ -46,14 +65,14 @@ const GameList = () => {
 
     },[isReady]);
 
-    // 전체 방 보기 클릭 시
+    // 전체 방 보기 클릭 시 일치하는 방을 selected 리스트에 추가 
     const selectAllRooms = () => {
         if(rooms){
             setSelectedRooms(rooms);
         }
     }
 
-    // 모집중인 방만 보기 클릭 시
+    // 모집중인 방만 보기 클릭 시 일치하는 방을 selected 리스트에 추가 
     const selectRecruitRooms =() => {
         if(rooms){
             let recruitRooms = [];
@@ -68,7 +87,7 @@ const GameList = () => {
         }
     }
 
-    // 관전가능한 방만 보기 클릭 시
+    // 관전가능한 방만 보기 클릭 시 일치하는 방을 selected 리스트에 추가 
     const selectWatchableRooms =() => {
         if(rooms){
             let watchableRooms = [];
@@ -83,7 +102,7 @@ const GameList = () => {
         }
     }
 
-    // 영상, 음성 버튼 클릭 시
+    // 영상, 음성 버튼 클릭 시 일치하는 방을 selected 리스트에 추가 
     const setVideoAudio = (selected) => {
         if(selected==="video"){
             if(rooms){
@@ -112,7 +131,7 @@ const GameList = () => {
         }
     }
 
-    // 해시태그 클릭 시
+    // 해시태그 클릭 시 일치하는 방을 selected 리스트에 추가 
     const selectHashtag = (selectedTag) => {
         if(rooms){
             let selected = [];
@@ -191,7 +210,7 @@ const GameList = () => {
 
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={background}>
             <div style={{ marginBottom: '20px' }}>
                 <button onClick={createRoom} style={buttonStyle}>방 만들기</button>
             </div>
@@ -203,7 +222,7 @@ const GameList = () => {
 
             <table style={{ marginBottom: '20px' }}>
                 <thead>
-                    <tr>
+                    <tr style={{ textAlign: 'center' }}>
                         <td>마스터</td>
                         <td>이름 및 소개</td>
                         <td>게임정보</td>
@@ -213,11 +232,11 @@ const GameList = () => {
                 <GameRoom key={room.room_num} room={room} setVideoAudio={setVideoAudio} selectHashtag={selectHashtag} goGameDetail={goGameDetail}/>)}
             </table>
             <form onSubmit={handleSubmit}>
-                <select defaultValue={"room_name"} onChange={handleOptionChange}>
+                <select defaultValue={"room_name"} onChange={handleOptionChange} style={{height : '40px'}}>
                     <option value={"nickname"}>작성자</option>
                     <option value={"room_name"}>제목</option>
                 </select>
-                <input type="text" onChange={handleInputChange} onKeyDown={enterKeyPress}></input>
+                <input type="text" onChange={handleInputChange} onKeyDown={enterKeyPress} style={{height : '40px' , width: '300px'}}></input>
                 <button style={buttonStyle}>검색</button>
             </form>
         </div>
