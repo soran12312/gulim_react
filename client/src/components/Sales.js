@@ -5,14 +5,18 @@ const Sales = () => {
   const [isSale, setSale] = useState([]);
   const [isReady, setIsReady] = useState(false);
 
+  const book_title_tag=(book_num)=>{
+    window.location.href = `https://localhost:8080/sale/book/book_detail?book_num=${book_num}`;
+  }
+
 
     const pocket = () => {
-      window.location.href = "https://localhost:8080/sale/basket";
+      window.location.href = "https://192.168.0.68:8080/sale/basket";
     };
 
   useEffect(() => {
     const getList = async () => {
-      const link = "https://localhost:8080/sale/sales";
+      const link = "https://192.168.0.68:8080/sale/sales";
       try {
         const response = await axios.get(link);
         setSale(response.data);
@@ -39,9 +43,7 @@ const Sales = () => {
               {isSale.map((product) => (          
                   <td>
                     <img src={product.path}/><br/>
-                    <a href={`sales/product_detail/${product.book_num}`}>
-                      <span>{product.book_title}</span>
-                    </a>
+                      <span onClick={() => book_title_tag(product.book_num)}>{product.book_title}</span>
                     <br/>
                     <span>BEST</span><br/>
                     <strong>{product.genre}</strong><br/>
@@ -59,7 +61,7 @@ const Sales = () => {
                 <td key={product.book_num}>
                   <div>
                     <img src={product.path}/><br/>
-                    <a href={`sales/product_detail/${product.book_num}`}>
+                    <a href={`https://localhost:8080/sales/product_detail/${product.book_num}`}>
                       <span>{product.book_title}</span>
                     </a>
                     <br/>
