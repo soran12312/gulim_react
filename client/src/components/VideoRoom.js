@@ -9,6 +9,8 @@ import Chatting from './Chatting';
 import CenterLoc from './CenterLoc';
 import Inventory from './Inventory';
 import StatAndSkill from './StatAndSkill';
+import Modal from 'react-modal';
+import Memo from './Memo';
 
 const styles = {
   video: {
@@ -62,6 +64,10 @@ const VideoRoom = () => {
   const [members, setMembers] = useState({});
   const [membersState, setMembersState] = useState(false);
   const [streamSetting, setStreamSetting] = useState({});
+
+  const [myMemo, setMyMemo] = useState([]);
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   // key = 연결된 유저들의 peerId, value = peer.call 객체
   const peers = useRef({});
@@ -123,6 +129,7 @@ const VideoRoom = () => {
     
     // isReady가 true일 경우에만 실행하고 false인 경우 getRoomData()를 시행
     if (isReady) {
+      memoSetting();
       getUserMedia(streamSetting, (stream) =>{
         console.log(stream);
         myStream.current = stream;
@@ -550,6 +557,21 @@ const VideoRoom = () => {
     }
   };
 
+  useEffect(() => {
+    if(userData && userData.member_info){
+      memoSetting();
+    }
+
+  },[userData]);
+  
+  // 유저정보에서 나의 메모를 찾아 myMemo에 set
+  const memoSetting = () => {
+    if(isMaster){
+      setMyMemo(userData.master_memos);
+    }else{
+      setMyMemo(userData.member_info.find((member) => member.id === userId).memos);
+    }
+  }
 
 if(isReady){
 
@@ -583,9 +605,16 @@ if(isReady){
           <tr>
             {!isMaster && 
             <td>
+              <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{content: {overflow: "auto", top: '50%',width: '20%', height: '30%',}}}>
+                <Memo 
+                  myMemo={myMemo} 
+                  refrashRoomData={refrashRoomData} 
+                  join_num={userData.member_info.find((member) => member.id === userId).join_num}
+                  room_num={userData.room_num}/>
+              </Modal><br/>
               <button onClick={muteHandler} ref={muteBtn}>mute</button>
               <button onClick={cameraHandler} ref={cameraBtn}>화면끄기</button>
-              <button>메모</button>
+              <button onClick={()=> setModalIsOpen(true)}>메모</button>
               <button onClick={recodeHandler} ref={recodeBtn}>녹음</button>
               {runSTT && <button onClick={sttHandler}>음성을 텍스트로 변환</button>}
               {download && <a ref={downloadLink}></a>}
@@ -595,9 +624,16 @@ if(isReady){
             }
             {isMaster &&
             <td colSpan={2}>
+              <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{content: {overflow: "auto", top: '50%',width: '20%', height: '30%',}}}>
+                <Memo 
+                  myMemo={myMemo} 
+                  refrashRoomData={refrashRoomData} 
+                  join_num={0}
+                  room_num={userData.room_num}/>
+              </Modal><br/>
               <button onClick={muteHandler} ref={muteBtn}>mute</button>
               <button onClick={cameraHandler} ref={cameraBtn}>화면끄기</button>
-              <button>메모</button>
+              <button onClick={()=> setModalIsOpen(true)}>메모</button>
               <button onClick={recodeHandler} ref={recodeBtn}>녹음</button>
               {runSTT && <button onClick={sttHandler}>음성을 텍스트로 변환</button>}
               {download && <a ref={downloadLink}></a>}
@@ -606,13 +642,26 @@ if(isReady){
               <button>?</button>
             </td>
             }
-            <td>다른사람 스텟&스킬
+            <td>다른사람의 캐릭터정보
+              <div style={{ height: "270px", width:"320px", overflow: "auto", wordWrap: 'break-word' }}>
               <StatAndSkill socket={socket} userData={userData} userId={mouseHoverUser} isMaster={isMaster} refrashRoomData={refrashRoomData}/>
+              </div>
             </td>
-            {!isMaster && <td>나의 스텟&스킬<StatAndSkill socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/></td>}
+            {!isMaster && 
+            <td>나의 캐릭터정보
+              <div style={{ height: "270px", width:"320px", overflow: "auto", wordWrap: 'break-word' }}>
+              <StatAndSkill socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/>
+              </div>
+            </td>}
             <td>인벤토리
-              {isMaster && <Inventory socket={socket} userData={userData} userId={mouseHoverUser} refrashRoomData={refrashRoomData}/>}
-              {!isMaster && <Inventory socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/>}
+              {isMaster && 
+              <div style={{ height: "270px", width:"320px", overflow: "auto", wordWrap: 'break-word' }}>
+                <Inventory socket={socket} userData={userData} userId={mouseHoverUser} refrashRoomData={refrashRoomData}/>
+              </div>}
+              {!isMaster && 
+              <div style={{ height: "270px", width:"320px", overflow: "auto", wordWrap: 'break-word' }}>
+                <Inventory socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/>
+              </div>}
             </td>
             <td colSpan={2}><Chatting socket={socket}/></td>
           </tr>
