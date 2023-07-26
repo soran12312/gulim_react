@@ -3,12 +3,23 @@ import SupportList from "./SupportList";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+
+
 const Support = () => {
     const {category} = useParams();
     const [lists,setLists] = useState([]);
     const [isReady,setIsReady] = useState(false);
     const [cateList,setCateList] = useState([]);
 
+
+    
+    const chunkArray = (array, chunkSize) => {
+        const chunkedArray = [];
+        for (let i = 0; i < array.length; i += chunkSize) {
+          chunkedArray.push(array.slice(i, i + chunkSize));
+        }
+        return chunkedArray;
+      };
     useEffect(() => {
         const getList = async () => {
 
@@ -36,6 +47,8 @@ const Support = () => {
                 if(list.category === category){
                     selectList.push(list);
                 }
+
+                
             });
             setCateList(selectList);
 
@@ -44,25 +57,24 @@ const Support = () => {
             getList();
         }
 
+
     },[isReady]);
 
-    
-        
-        
-    
+    // groupedCateList를 useEffect 밖으로 이동
+    const groupedCateList = chunkArray(cateList, 1);
 
- 
-    return(
-        <div>
-            <div>
-
-                <div>왜 안뜨지</div>
-                {cateList && cateList.sort((a, b) => a.s_img_num - b.s_img_num).map((list) => ( 
-                     <SupportList key={list.num} list={list} />
-                ))}
+     return(
+   
+            <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {groupedCateList.map((group,index) => (
+                    <span key={index} style={{ flex: "0 0 25%", margin: "10px", margin: '30px', border: '1px solid'}}>
+                        {group.map((list) => (<SupportList key = {list.num} list = {list} ></SupportList>
+                        ))}
+                    </span>
+                ))}                
             </div>
-        </div>
     )
+     
 }
 
 export default Support;
