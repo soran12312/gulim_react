@@ -57,7 +57,7 @@ const Chatting = (props) => {
 
     return (
         <div>
-            <ul ref={chatGrid} style={{ height: "300px", overflow: "auto" }}></ul>
+            <ul ref={chatGrid} style={{ height: "260px", overflow: "auto" }}></ul>
             <input type="text" ref={chatInput} onKeyDown={enterKeyPress}></input><button onClick={chatHandler}>보내기</button>
         </div>
     );

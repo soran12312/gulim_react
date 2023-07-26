@@ -8,6 +8,7 @@ import { addUser, removeUser } from '../reducer/roomReducer';
 import Chatting from './Chatting';
 import CenterLoc from './CenterLoc';
 import Inventory from './Inventory';
+import StatAndSkill from './StatAndSkill';
 
 const styles = {
   video: {
@@ -36,6 +37,15 @@ const VideoRoom = () => {
   const [muteState,setMuteState] = useState(true);
   const muteBtn = useRef(null);
 
+  const [recodeState, setRecodeState] = useState(true);
+  const recodeBtn = useRef(null);
+
+  const [download,setDownload] = useState(false);
+  const downloadLink = useRef(null);
+  const [audioURL, setAudioURL] = useState(null);
+  const [runSTT,setRunSTT] = useState(false);
+  const [recodedAudio,setRecodedAudio] = useState(null);
+
   const [ignoreSelect, setIgnoreSelect] = useState(false);
 
   const videoRefs = useRef(Array(6).fill(null));
@@ -51,6 +61,7 @@ const VideoRoom = () => {
 
   const [members, setMembers] = useState({});
   const [membersState, setMembersState] = useState(false);
+  const [streamSetting, setStreamSetting] = useState({});
 
   // key = 연결된 유저들의 peerId, value = peer.call 객체
   const peers = useRef({});
@@ -89,11 +100,16 @@ const VideoRoom = () => {
     // 스프링을 통해 db에서 채팅방의 데이터를 얻어오는 함수
     // (첫 랜더링 시 한번만 실행되며, 실행 후 isReady를 true로 만들어 다시 실행되지 않는다.)
     const getRoomData = async () => {
-      const link = `https://192.168.0.68:3030/chatData/${room}`;
+      const link = `https://192.168.0.68:8080/chatData/room/${room}`;
       try {
         const response = await axios.get(link);
         const resData = response.data;
         setUserData(response.data);
+        if(resData.video===0){
+          setStreamSetting({video: true, audio: true});
+        }else if(resData.video===1){
+          setStreamSetting({audio: true});
+        }
         //streamId = resData.streamId;
         if(resData.id === userId){
           setIsMaster(true);
@@ -107,7 +123,7 @@ const VideoRoom = () => {
     
     // isReady가 true일 경우에만 실행하고 false인 경우 getRoomData()를 시행
     if (isReady) {
-      getUserMedia({video: true, audio: true}, (stream) =>{
+      getUserMedia(streamSetting, (stream) =>{
         console.log(stream);
         myStream.current = stream;
         // 나의 스트림을 비디오에 set
@@ -245,8 +261,22 @@ const VideoRoom = () => {
             console.log("peers :",peers);
         }; // end of connectToNewUser
 
-        
+        // 인벤토리, 스킬, 스텟 변화 시 db에서 방정보 다시 가져옴
+        socket.current.on("refrash", () => {
+          refrashRoomData();
+        });
 
+        // 방정보 새로 가져오기
+        const refrashRoomData = async () => {
+          const link = `https://192.168.0.68:8080/chatData/room/${room}`;
+          try {
+            const response = await axios.get(link);
+            setUserData(response.data);
+            console.log("refrash");
+          } catch (error) {
+            console.error(error);
+          }
+        };
 
       });
 
@@ -409,6 +439,117 @@ const VideoRoom = () => {
     return null;
   };
 
+  const mediaRecorder = useRef(null);
+  let recordedChunks = [];
+
+  const recodeHandler = () => {
+    
+    if(recodeState){
+      recodeBtn.current.innerText = "녹음중지";
+
+      // 오디오 스트림만 가져오기
+      let audioStream = myStream.current.clone();
+      audioStream.getVideoTracks().forEach(track => track.stop());
+    
+      // 녹음 시작
+      mediaRecorder.current = new MediaRecorder(audioStream);
+      mediaRecorder.current.start();
+
+      // 녹음 데이터 저장
+      mediaRecorder.current.ondataavailable = function(e) {
+        console.log('Data available: ', e.data.size);
+        recordedChunks.push(e.data);
+      };
+
+      // 녹음 완료되면 Blob으로 변환하고 다운로드 링크 생성
+      mediaRecorder.current.onstop = function() {
+        const blob = new Blob(recordedChunks, {
+          type: 'audio/wav'
+        });
+        recordedChunks = [];
+        setRecodedAudio(blob);
+        // Blob URL 생성
+        const audioURL = URL.createObjectURL(blob);
+
+        setAudioURL(audioURL);
+        setDownload(true);
+        setRunSTT(true);
+      }
+      
+      setRecodeState(false);
+    } else {
+      recodeBtn.current.innerText = "녹음";
+
+      // 녹음 중지
+      if (mediaRecorder && mediaRecorder.current) {
+        mediaRecorder.current.stop();
+      }
+      setRecodeState(true);
+    }
+  }
+
+  
+  // 녹음본 다운로드 링크 출력 컨트롤
+  useEffect(() => {
+    if(download && downloadLink.current) {
+      downloadLink.current.href = audioURL;
+      downloadLink.current.download = 'recorded.wav';
+      downloadLink.current.innerText = "녹음본 다운로드";
+    } else if(downloadLink.current) {
+        downloadLink.current.href = '';
+        downloadLink.current.download = '';
+        downloadLink.current.innerText = '';
+    }
+  }, [download, audioURL]);
+
+  const [transcription, setTranscription] = useState("");
+  const [saveText,setSaveText] = useState(false);
+  const textSave = useRef(null);
+
+
+  // 음성 텍스트로 변환 버튼이벤트
+  const sttHandler = () => {
+    // 파이썬으로 보낼 데이터
+    let formData = new FormData();
+    formData.append('audio', recodedAudio, 'recorded.wav');
+    
+    // 파이썬으로 post요청
+    axios.post('https://192.168.0.68:5000/transcribe', formData, {
+      headers: {
+          'Content-Type': 'multipart/form-data'
+      }
+  })
+    .then((response) => {
+      console.log(response.data);
+      setTranscription(response.data);
+      setSaveText(true);
+      setRunSTT(false);
+    })
+    .catch((error) => {
+      console.error(error);
+      setRunSTT(false);
+    });
+  }
+
+  const saveTextAsFile = () => {
+    const blob = new Blob([transcription], {type: "text/plain;charset=utf-8"});
+    const href = URL.createObjectURL(blob);
+    textSave.current.href = href;
+    textSave.current.download = 'transcribed.txt';
+  }
+
+  // 방정보 새로 가져오기
+  const refrashRoomData = async () => {
+    const link = `https://192.168.0.68:8080/chatData/room/${room}`;
+    try {
+      const response = await axios.get(link);
+      setUserData(response.data);
+      console.log("refrash");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
 if(isReady){
 
@@ -445,6 +586,10 @@ if(isReady){
               <button onClick={muteHandler} ref={muteBtn}>mute</button>
               <button onClick={cameraHandler} ref={cameraBtn}>화면끄기</button>
               <button>메모</button>
+              <button onClick={recodeHandler} ref={recodeBtn}>녹음</button>
+              {runSTT && <button onClick={sttHandler}>음성을 텍스트로 변환</button>}
+              {download && <a ref={downloadLink}></a>}
+              {saveText && <button onClick={saveTextAsFile} ref={textSave}>텍스트 다운로드</button>}
               <button>?</button>
             </td>
             }
@@ -453,15 +598,21 @@ if(isReady){
               <button onClick={muteHandler} ref={muteBtn}>mute</button>
               <button onClick={cameraHandler} ref={cameraBtn}>화면끄기</button>
               <button>메모</button>
+              <button onClick={recodeHandler} ref={recodeBtn}>녹음</button>
+              {runSTT && <button onClick={sttHandler}>음성을 텍스트로 변환</button>}
+              {download && <a ref={downloadLink}></a>}
+              {saveText && <button onClick={saveTextAsFile} ref={textSave}>텍스트 다운로드</button>}
               <button onClick={ignoreSelectBtn}>강퇴</button>
               <button>?</button>
             </td>
             }
-            <td>다른사람 스텟, 스킬창 영역</td>
-            {!isMaster && <td>스텟, 스킬창영역</td>}
+            <td>다른사람 스텟&스킬
+              <StatAndSkill socket={socket} userData={userData} userId={mouseHoverUser} isMaster={isMaster} refrashRoomData={refrashRoomData}/>
+            </td>
+            {!isMaster && <td>나의 스텟&스킬<StatAndSkill socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/></td>}
             <td>인벤토리
-              {isMaster && <Inventory userData={userData} userId={mouseHoverUser}/>}
-              {!isMaster && <Inventory userData={userData} userId={userId}/>}
+              {isMaster && <Inventory socket={socket} userData={userData} userId={mouseHoverUser} refrashRoomData={refrashRoomData}/>}
+              {!isMaster && <Inventory socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/>}
             </td>
             <td colSpan={2}><Chatting socket={socket}/></td>
           </tr>

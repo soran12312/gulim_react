@@ -27,27 +27,6 @@ app.use(cors({
 app.use(express.static("client"));
 app.use("/peerjs", peerServer);
 
-app.get('/chatData/:room', async (req, res) => {
-  try {
-    const room = req.params.room; // URL 파라미터(room) 가져오기
-    const url = `https://192.168.0.68:8080/chatData/room/${room}`; // 새로운 URL 생성
-    //console.log('/chatData/:room');
-    const response = await axios.get(url, {
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false
-      })
-    });
-    console.log(url);
-    const data = response.data;
-    // 데이터 처리 로직
-    res.json(data);
-  } catch (error) {
-    // 에러 처리 로직
-    console.log(error);
-    res.status(500).json({ error: 'Failed to fetch data from the server.' });
-  }
-});
-
 
 var users = {};
 
@@ -97,6 +76,11 @@ io.on("connection", (socket) => {
       socket.on("message", (message) => {
         //console.log(message);
         socket.broadcast.to(roomId).emit("newMessage", userId, message);
+      });
+
+      socket.on("refrash", () => {
+        console.log("refrash");
+        socket.broadcast.to(roomId).emit("refrash");
       });
 
       socket.on("giveDice", (streamId, diceFace, diceCount) => {
