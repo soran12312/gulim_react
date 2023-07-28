@@ -3,6 +3,7 @@ import VideoRoom from './components/VideoRoom';
 import GameList from "./components/GameList";
 import Sales from "./components/Sales";
 import Support from "./components/Support";
+import CustomerChat from "./components/CustomerChat";
 
 function App() {
   
@@ -14,6 +15,7 @@ function App() {
           <Route path="/roomList" element={<GameList/>}/>
           <Route path="/sales" element={<Sales/>}/>
           <Route path="/support/data/:category" element={<Support/>}/>
+          <Route path="/customerchat/:userId" element={<CustomerChat/>}/>
       </Routes>
     </BrowserRouter>
   );

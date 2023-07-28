@@ -1,5 +1,6 @@
 const axios = require("axios");
 const cors = require('cors');
+const { unsubscribe } = require("diagnostics_channel");
 const express = require("express");
 const app = express();
 const fs = require('fs');
@@ -11,7 +12,7 @@ const https = require('https');
 const server = https.createServer(options,app);
 const io = require('socket.io')(server, {
   cors: {
-    origin: "https://192.168.0.68:3000",
+    origin: "https://localhost:3000",
     methods: ["GET", "POST"]
   }
 });
@@ -115,7 +116,28 @@ io.on("connection", (socket) => {
 
       });
     });
+
+    //유저가 방에 들어옴
+    socket.on("join_customer",(roomId,adminId,userId)=>{
+    socket.join(roomId)
+    //문의 사항 보내기
+    socket.on("inquiry", (inquiry) => {
+    socket.broadcast.to(roomId).emit("newInquiry", userId, adminId,inquiry);
+    //유저가 나갔을 때
+    socket.on("out_customer",()=>{
+      if(uesr[roomId] && Object.entries(user[roomId].length !== 1)){
+        socket.broadcast.to(roomId).emit("disconnceted_customers");
+      }
+      deleteUser(roomId, userId);
+    })
+
+    });
+
+    })
 });
+
+
+
 
 const port = 3030;
 server.listen(port, () => {
