@@ -28,7 +28,7 @@ app.use(cors({
 app.use(express.static("client"));
 app.use("/peerjs", peerServer);
 
-
+const userR = {};
 var users = {};
 
 const addUser = (roomId, userId, socketId, peerId, streamId) => {
@@ -117,23 +117,38 @@ io.on("connection", (socket) => {
       });
     });
 
-    //유저가 방에 들어옴
-    socket.on("join_customer",(roomId,adminId,userId)=>{
-    socket.join(roomId)
-    //문의 사항 보내기
-    socket.on("inquiry", (inquiry) => {
-    socket.broadcast.to(roomId).emit("newInquiry", userId, adminId,inquiry);
-    //유저가 나갔을 때
-    socket.on("out_customer",()=>{
-      if(uesr[roomId] && Object.entries(user[roomId].length !== 1)){
-        socket.broadcast.to(roomId).emit("disconnceted_customers");
+    socket.on("join_admin", (roomId, adminId) => {
+      console.log("어드민 아이디:", adminId);
+      socket.join(`admin_${roomId}`);
+      userR[socket.id] = "admin"; // 관리자 역할을 할당합니다.
+    });
+  
+    // 유저가 방에 들어옴
+    socket.on("join_customer", (roomId, userId) => {
+      console.log("유저 아이디:", userId);
+      socket.join(`user_${roomId}`);
+      userR[socket.id] = userId; // 유저 역할을 할당합니다.
+      // 관리자에게 유저 아이디를 보냅니다.
+      socket.to(`admin_${roomId}`).emit("admin_user_id", roomId, userId);
+    });
+  
+    // 새로운 채팅 메시지가 왔을 때
+    socket.on("new_message", (roomId, userId, message) => {
+      const sendR = userR[socket.id];
+      if (sendR === "admin") {  
+        socket.to(`user_${roomId}`).emit("new_message", userId, message);
+      } else if (sendR === userId) {
+        socket.to(`admin_${roomId}`).emit("new_message", userId, message);
+      }
+    });
+  
+    // 유저가 나갔을 때
+    socket.on("out_customer", (roomId, userId) => {
+      if (users[roomId] && Object.entries(users[roomId]).length !== 1) {
+        socket.broadcast.to(`admin_${roomId}`).emit("disconnected_customers");
       }
       deleteUser(roomId, userId);
-    })
-
     });
-
-    })
 });
 
 
