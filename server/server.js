@@ -79,6 +79,11 @@ io.on("connection", (socket) => {
         socket.broadcast.to(roomId).emit("newMessage", userId, message);
       });
 
+      socket.on('image', (data) => {
+        console.log("image");
+        socket.broadcast.to(roomId).emit("imgArrive", data);
+      });
+
       socket.on("refrash", () => {
         console.log("refrash");
         socket.broadcast.to(roomId).emit("refrash");

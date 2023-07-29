@@ -208,6 +208,11 @@ const GameList = () => {
         }
     }
 
+    const goWatching = (room_num) => {
+        var url = "https://192.168.0.68:3000/watchGame/"+room_num;
+		window.open(url, 'Chatting Room','width=1300,height=900');
+    }
+
 
     return (
         <div style={background}>
@@ -229,7 +234,10 @@ const GameList = () => {
                     </tr>
                 </thead>
                 {selectedRooms && selectedRooms.sort((a, b) => new Date(b.create_date) - new Date(a.create_date)).map(room => 
-                <GameRoom key={room.room_num} room={room} setVideoAudio={setVideoAudio} selectHashtag={selectHashtag} goGameDetail={goGameDetail}/>)}
+                <div>
+                    <GameRoom key={room.room_num} room={room} setVideoAudio={setVideoAudio} selectHashtag={selectHashtag} goGameDetail={goGameDetail}/>
+                    {room.watching===0 && <button onClick={() => goWatching(room.room_num)}>관전하기</button>}
+                </div>)}
             </table>
             <form onSubmit={handleSubmit}>
                 <select defaultValue={"room_name"} onChange={handleOptionChange} style={{height : '40px'}}>

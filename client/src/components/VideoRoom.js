@@ -573,11 +573,16 @@ const VideoRoom = () => {
     }
   }
 
+  // 나가기버튼 클릭 시 창닫기
+  const closeWindow = () => {
+    window.close();
+  }
+
 if(isReady){
 
   return (
     <>
-      <button>나가기</button>
+      <button onClick={closeWindow}>나가기</button>
       <h1>{userData.room_name}</h1>
       <div>
         <table>

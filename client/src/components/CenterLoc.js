@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
-import { useParams } from 'react-router-dom';
+import Modal from 'react-modal';
 
 
 const CenterLoc = React.forwardRef((props, ref) => {
@@ -11,11 +11,15 @@ const CenterLoc = React.forwardRef((props, ref) => {
 
     const diceFace = useRef(null);
     const diceCount = useRef(null);
+    const fileInput = useRef(null);
 
     const [rolling,setRolling] = useState(false);
     const [result,setResult] = useState(false);
     const [diceResult,setDiceResult] = useState([]);
     const [diceSum,setDiceSum] = useState(0);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [imgDownload, setImgDownload] = useState(false);
+    const [imgData, setImgData] = useState(null);
 
     useEffect(() => {
         socket.current.on("diceResult",(dResult, sum) => {
@@ -34,6 +38,13 @@ const CenterLoc = React.forwardRef((props, ref) => {
             },2600);
             
         });
+
+        socket.current.on('imgArrive', (data) => {
+            console.log("이미지 받음"+data);
+            setImgData(data.buffer);
+            setImgDownload(true);
+        });
+
     },[]);
 
     const rollDice = (hidden) => {
@@ -89,10 +100,56 @@ const CenterLoc = React.forwardRef((props, ref) => {
         selectDice,
     }));
 
+    // 이미지 보내기 버튼 클릭 시 모달 출력
+    const openSendImgModal = () => {
+        setModalIsOpen(true);
+    }
+
+    // 이미지 업로드시 이벤트
+    const handleImageUpload = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            console.log("이미지 보냄");
+            socket.current.emit('image', { image: true, buffer: reader.result });
+            
+        };
+        
+        reader.readAsDataURL(file);
+    };
+
+    const imgDownloadHandler = () => {
+        var url = imgData;
+
+        // 다운로드 링크를 생성
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = 'download.png'; // 다운로드할 파일명
+
+        // 링크를 클릭하여 다운로드를 시작
+        link.click();
+
+    }
+
     return (
         <div>
             <div>
-                가운데 영역(이미지올리기버튼(방장), 주사위굴리기버튼 등)<br/>
+                {isMaster && <button onClick={openSendImgModal}>이미지 보내기</button>}
+                {imgDownload && <button onClick={imgDownloadHandler}>이미지 다운로드</button>}
+                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{content: {overflow: "auto", top: '10%',width: '10%', height: '10%',left: '20%'}}}>
+                    <input 
+                    type="file"
+                    accept="image/*"
+                    ref={fileInput}
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                    />
+                    <button onClick={() => fileInput.current.click()}>
+                        이미지 업로드
+                    </button>
+                </Modal>
+                <br/>
                 {rolling && <img src="/img/gulim_dice_roll.gif" alt="GIF"/>}
                 {!rolling && <img src="/img/gulim_dice.png" alt="PNG"/>}
                 {result && <span>결과 : {diceResult.join(', ')} 합 : {diceSum}</span>}
