@@ -15,6 +15,16 @@ const CustomerChat=()=>{
   const chatGrid = useRef(null);
   const input_grid = useRef(null);
 
+  const style_iframe={
+    iframe : {
+      height: "300px", 
+      overflow: "auto",
+      height : "300px" 
+    }
+
+  }
+
+  // 서버 불러옴
   useEffect(() => {
     socket.current = io('https://192.168.0.68:3030');
   },[]);
@@ -23,7 +33,7 @@ const CustomerChat=()=>{
     
     const getData = async () => {
       
-
+      // 스프링에서 이 url이 불릴 때 작동하는 함수
       const link = "https://192.168.0.68:8080/customer_service/customer_chat?id="+userId;
       try {
         var result = await axios.get(link);
@@ -51,11 +61,11 @@ const CustomerChat=()=>{
         socket.current.on("user_joined",(userId) => {
 
           // 스프링에 신호 보내기
-          window.parent.postMessage("user_connect", "*");
+        window.parent.postMessage("user_connect", "*");
 
-          send_chat("유저가 입장하였습니다.", "admin");
+        send_chat("유저가 입장하였습니다.", userId);
     
-          socket.current.emit("join_chat",userId);
+        socket.current.emit("join_chat",userId);
         });
     
       }else if(socket && socket.current){
@@ -119,13 +129,22 @@ const CustomerChat=()=>{
     input_grid.current.value = "";
   }
 
+  const disconnectSocket = () => {
+    if (socket.current) {
+   
+      socket.current.disconnect();
+      socket.current = null;
+    }
+  };
+
     return(
         <div>
-         <ul ref={chatGrid} style={{ height: "260px", overflow: "auto" }}>
+         <ul ref={chatGrid} style={style_iframe.iframe}>
 
          </ul>
           <input type="text" onChange={chatInput} onKeyDown={enterHandler} ref={input_grid}></input>
           <button onClick={chatingHandler}>전송</button>
+          <button onClick={disconnectSocket}>나가기</button>
         </div>
         
     );    
