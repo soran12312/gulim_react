@@ -236,7 +236,6 @@ const GameList = () => {
                 {selectedRooms && selectedRooms.sort((a, b) => new Date(b.create_date) - new Date(a.create_date)).map(room => 
                 <div>
                     <GameRoom key={room.room_num} room={room} setVideoAudio={setVideoAudio} selectHashtag={selectHashtag} goGameDetail={goGameDetail}/>
-                    {room.watching===0 && <button onClick={() => goWatching(room.room_num)}>관전하기</button>}
                 </div>)}
             </table>
             <form onSubmit={handleSubmit}>
