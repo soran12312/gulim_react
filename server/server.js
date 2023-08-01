@@ -156,7 +156,7 @@ io.on("connection", (socket) => {
       socket.on("leave_chat", () => {
         // 소켓 연결 끊기
         console.log("떠나기");
-        socket.broadcast.to(userId).emit("leave_user");
+        socket.broadcast.to(userId).emit("leave_user", userId);
         socket.disconnect();
       });
     });

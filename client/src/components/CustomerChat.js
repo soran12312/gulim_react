@@ -61,7 +61,7 @@ const CustomerChat=()=>{
         socket.current.on("user_joined",(userId) => {
 
           // 스프링에 신호 보내기
-        window.parent.postMessage("user_connect", "*");
+        window.parent.postMessage({message: "user_connect", userId: userId}, "*");
 
         send_chat("유저가 입장하였습니다.", userId);
           
@@ -69,8 +69,8 @@ const CustomerChat=()=>{
 
         });
 
-        socket.current.on("leave_user",() => {
-          window.parent.postMessage("leave_chatting", "*");
+        socket.current.on("leave_user",(userId) => {
+          window.parent.postMessage({message: "leave_chatting", userId: userId}, "*");
         });
 
     
