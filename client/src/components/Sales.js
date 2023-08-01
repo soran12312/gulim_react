@@ -6,7 +6,7 @@ const Sales = () => {
   const [isReady, setIsReady] = useState(false);
 
   const book_title_tag=(book_num)=>{
-    window.location.href = `https://localhost:8080/sale/book/book_detail?book_num=${book_num}`;
+    window.location.href = `https://192.168.0.68:8080/sale/book/book_detail?book_num=${book_num}`;
   }
 
     const pocket = () => {

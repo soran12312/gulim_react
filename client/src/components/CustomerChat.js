@@ -64,9 +64,15 @@ const CustomerChat=()=>{
         window.parent.postMessage("user_connect", "*");
 
         send_chat("유저가 입장하였습니다.", userId);
-    
+          
         socket.current.emit("join_chat",userId);
+
         });
+
+        socket.current.on("leave_user",() => {
+          window.parent.postMessage("leave_chatting", "*");
+        });
+
     
       }else if(socket && socket.current){
     
@@ -74,8 +80,9 @@ const CustomerChat=()=>{
         socket.current.emit("join_customer", userId);
     
         socket.current.on("admin_joined",() => {
-          send_chat("관리자가 입장하였습니다.", "admin");
+        send_chat("관리자가 입장하였습니다.", "admin");
         });
+
       }
 
     }else{
@@ -129,13 +136,10 @@ const CustomerChat=()=>{
     input_grid.current.value = "";
   }
 
-  const disconnectSocket = () => {
-    if (socket.current) {
-   
-      socket.current.disconnect();
-      socket.current = null;
-    }
-  };
+  function handleLeavechat() {
+    console.log("나가짐??")
+    socket.current.emit("leave_chat");
+  }
 
     return(
         <div>
@@ -144,7 +148,7 @@ const CustomerChat=()=>{
          </ul>
           <input type="text" onChange={chatInput} onKeyDown={enterHandler} ref={input_grid}></input>
           <button onClick={chatingHandler}>전송</button>
-          <button onClick={disconnectSocket}>나가기</button>
+          <button onClick={handleLeavechat}>나가기</button>
         </div>
         
     );    

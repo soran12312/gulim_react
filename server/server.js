@@ -153,8 +153,13 @@ io.on("connection", (socket) => {
         socket.broadcast.to(userId).emit("chatting_arrive", chat, userId);
       });
 
+      socket.on("leave_chat", () => {
+        // 소켓 연결 끊기
+        console.log("떠나기");
+        socket.broadcast.to(userId).emit("leave_user");
+        socket.disconnect();
+      });
     });
-  
     
 });
 
