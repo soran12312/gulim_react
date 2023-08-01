@@ -17,9 +17,9 @@ const CustomerChat=()=>{
 
   const style_iframe={
     iframe : {
-      height: "300px", 
+      height: "600px", 
       overflow: "auto",
-      height : "300px" 
+      height : "600px"
     }
 
   }
@@ -74,7 +74,7 @@ const CustomerChat=()=>{
         // 서버로부터 'leave_user' 이벤트를 수신하면 실행할 콜백 함수
         socket.current.on("leave_user",(userId) => {
         //스프링에 message , userId를 보냄
-        window.parent.postMessage({message: "leave_chatting", userId: userId}, "*");
+        window.opener.postMessage({message: "leave_chatting", userId: userId}, "*");
         });
 
       // 'socket'과 'socket.current'가 존재하고,유저로서 채팅에 접속한 경우
@@ -112,8 +112,10 @@ const CustomerChat=()=>{
     // userId 가 " " 이거면
     if(userId === " "){
       newChat.textContent = "나 : " + chat;
+      newChat.classList.add("user-chat");
     }else{
       newChat.textContent = userId + " : " + chat;
+      newChat.classList.add("admin-chat");
     }
     // 채팅 메시지를 화면에 추가
     chatGrid.current.appendChild(newChat);
@@ -155,20 +157,31 @@ const CustomerChat=()=>{
   function handleLeavechat() {
     //서버로 "leave_chat" 이벤트를 보냄
     socket.current.emit("leave_chat");
+    window.close();
   }
 
     return(
-      <div className="chat-container" style={style_iframe.iframe}>
-         <ul ref={chatGrid}>
-         </ul>
-          <input type="text" onChange={chatInput} onKeyDown={enterHandler} ref={input_grid}></input>
-          <button onClick={chatingHandler}>전송</button>
-          <button onClick={handleLeavechat}>나가기</button>
-        </div>
+      <div className="chat-container">
         
-    );    
-   
-}
+      <div className="chat-list-container">
+        <div className="chat_list_list">
+        <ul ref={chatGrid} className="chat-list" style={style_iframe.iframe}>
+        </ul>
+        </div>
+      </div>
+      <div className="input-button-container">
+        <input type="text" onChange={chatInput} onKeyDown={enterHandler} ref={input_grid}className="input-box"/>
+        <button onClick={chatingHandler} className="button">
+          전송
+        </button>
+        <button onClick={handleLeavechat} className="button">
+          나가기
+        </button>
+      </div>
+      
+    </div>
+  );
+};
 
 
 export default CustomerChat
