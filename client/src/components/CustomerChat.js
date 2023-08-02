@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import "../css/chat.css"
 
 const CustomerChat=()=>{
-  const[isImage,setImage] = useState([]);
+
   const socket = useRef(null);
   const [isReady, setIsReady] = useState(false);
   const {userId}= useParams();
@@ -17,12 +17,12 @@ const CustomerChat=()=>{
 
   const style_iframe={
     iframe : {
-      height: "600px", 
+      width: "450px", 
       overflow: "auto",
-      height : "600px"
+      height : "450px"
     }
-
   }
+
   // 서버 불러옴
   useEffect(() => {
     socket.current = io('https://192.168.0.68:3030');
@@ -111,10 +111,10 @@ const CustomerChat=()=>{
     const newChat = document.createElement("li");
     // userId 가 " " 이거면
     if(userId === " "){
-      newChat.textContent = "나 : " + chat;
+      newChat.textContent = chat + ": 나  ";
       newChat.classList.add("user-chat");
     }else{
-      newChat.textContent = userId + " : " + chat;
+      newChat.textContent = + chat+ " : " + userId;
       newChat.classList.add("admin-chat");
     }
     // 채팅 메시지를 화면에 추가
@@ -162,13 +162,10 @@ const CustomerChat=()=>{
 
     return(
       <div className="chat-container">
-        
-      <div className="chat-list-container">
-        <div className="chat_list_list">
+
         <ul ref={chatGrid} className="chat-list" style={style_iframe.iframe}>
         </ul>
-        </div>
-      </div>
+
       <div className="input-button-container">
         <input type="text" onChange={chatInput} onKeyDown={enterHandler} ref={input_grid}className="input-box"/>
         <button onClick={chatingHandler} className="button">

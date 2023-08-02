@@ -36,16 +36,16 @@ const Sales = () => {
   return (
     <div>
       <button onClick={pocket}>장바구니</button>
-          <h1>많이 보는 설정집</h1> 
+          <h1 className="h1_view">많이 보는 설정집</h1> 
             <hr/>
             <div> 
               {isSale.map((product) => (
                   <td>
-                    <img src={"https://192.168.0.68:8080"+product.path}/><br/>
-                      <span onClick={() => book_title_tag(product.book_num)}>{product.book_title}</span>
+                    <img src={"https://192.168.0.68:8080"+product.path} className="td_img" onClick={() => book_title_tag(product.book_num)}/><br/>
+                      <span onClick={() => book_title_tag(product.book_num)} className="td_span">{product.book_title}</span>
                     <br/>
-                    <span>BEST</span><br/>
-                    <strong>{product.genre}</strong><br/>
+                    <span className="td_span_span">BEST</span><br/>
+                    <strong className="td_span_span">{product.genre}</strong><br/>
                     
                     </td>
               ))}

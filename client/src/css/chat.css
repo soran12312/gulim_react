@@ -2,31 +2,17 @@
     background-image: url("../../public/img/배경2.png");
     background-repeat: no-repeat;
     height: 600px;
-
+    width: 600px;
 }
-.chat-list-container {
-    position: absolute; /* 절대 위치 설정 */
-    bottom: 40px; /* 하단에서 40px 떨어진 위치에 고정 */
-    left: 0;
-    right: 0;
-    top: 0;
-  }
-  
-.chat_list_list{
+ 
+.chat-list{
     position: absolute;
-    width: 450px;
-    height: 450px;
+    overflow: hidden;
+    width: 600px;
+    height:600px;
     left: 80px;
     top: 80px;
-    overflow: auto;
 }
-
-  /* 채팅 메시지 목록의 ul 요소의 스타일 */
-  .chat-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
   
   /* 유저의 채팅 스타일 */
   .user-chat {
@@ -39,8 +25,8 @@
   /* 관리자(Admin)의 채팅 스타일 */
   .admin-chat {
     text-align: left;
-    color: #fff;
-    background-color: rgba(0, 123, 255, 0.1); /* 투명도 추가 */
+    color: #000;
+    background-color: rgba(255, 255, 255, 0.1); /* 투명도 추가 */
     padding: 5px;
   }
   
@@ -69,3 +55,36 @@
     height: 30px;
     padding: 5px 10px;
   }
+
+  /* 여기 부터는 많이 보는 설정집 css */
+
+.h1_view{
+color: white;
+text-align: center;
+}
+
+.td_img{
+  position: relative;
+  padding: auto;
+  margin: 50px;
+  color: white;
+  left: 200px;
+  cursor: pointer;
+}
+.td_span{
+  position: relative;
+  padding: auto;
+  margin: 50px;
+  color: white;
+  font-size: 20px;
+  left: 200px;
+  cursor: pointer;
+}
+.td_span_span{
+  position: relative;
+  padding: auto;
+  margin: 50px;
+  color: white;
+  font-size: 20px;
+  left: 200px;
+}
