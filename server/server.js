@@ -1,6 +1,4 @@
-const axios = require("axios");
 const cors = require('cors');
-const { unsubscribe } = require("diagnostics_channel");
 const express = require("express");
 const app = express();
 const fs = require('fs');
@@ -10,6 +8,7 @@ const options = {
   };
 const https = require('https');
 const server = https.createServer(options,app);
+// 화상채팅 리액트서버에서 socket서버로 연결 시 크로스오리진 허용
 const io = require('socket.io')(server, {
   cors: {
     origin: "https://192.168.0.68:3000",
@@ -22,13 +21,15 @@ const peerServer = ExpressPeerServer(server, {
   debug: true,
 });
 
+// 모든 url에서의 express서버로의 크로스오리진 허용
 app.use(cors({
   origin: '*',
 }));
+// 클라이언트와 연결 허용
 app.use(express.static("client"));
+// /peerjs요청을 peerServer와 연결
 app.use("/peerjs", peerServer);
 
-const userR = {};
 var users = {};
 
 const addUser = (roomId, userId, socketId, peerId, streamId) => {
@@ -71,46 +72,59 @@ io.on("connection", (socket) => {
       // 유저정보 저장
       addUser(roomId, userId, socket.id, peerId, streamId);
       console.log(users);
+      // 이미 방에 있는 다른 사람들에게 입장한 유저정보를 보냄
       socket.broadcast.to(roomId).emit("user-connected", peerId, userId, users);
+      // 모든 유저에게 현재 방에 있는 모든 유저정보 보냄
       socket.emit("userInfo", users);
-  
+
+      // 연결이 끊어졌을 때
+      socket.on("disconnect", () => {
+        console.log("user disconnect: ", peerId);
+        console.log("leng :", Object.entries(users[roomId]).length);
+        if(users[roomId] && Object.entries(users[roomId]).length !== 1){
+          console.log("user-disconnected emit");
+          // 방의 다른 유저들에게 누가 나갔는지 알려줌
+          socket.broadcast.to(roomId).emit("user-disconnected", peerId, streamId);
+        }
+        // 유저정보에서 나간 유저의 정보 제거
+        deleteUser(roomId, userId);
+        console.log(users);
+      });
+
+      // 메시지 도착 시
       socket.on("message", (message) => {
-        //console.log(message);
+        // 방의 다른 모든 유저에게 메시지 작성자id와 메시지를 보냄
         socket.broadcast.to(roomId).emit("newMessage", userId, message);
       });
 
+      // 이미지 도착 시
       socket.on('image', (data) => {
         console.log("image");
+        // 방의 다른 모든 유저에게 이미지 데이터 보냄
         socket.broadcast.to(roomId).emit("imgArrive", data);
       });
 
+      // 화면 새로고침 요청
       socket.on("refrash", () => {
         console.log("refrash");
+        // 다른 모든 유저에게 DB값 새로 받아오도록 신호를 보냄
         socket.broadcast.to(roomId).emit("refrash");
       });
 
+      // 방장이 보낸 주사위 정보 및 보낼 유저id를 토대로 해당 유저에게 주사위정보를 보냄
       socket.on("giveDice", (streamId, diceFace, diceCount) => {
         var user = findUserByStreamId(streamId);
         var diceRoller = users[user.roomId][user.userId].socketId;
         socket.broadcast.to(diceRoller).emit("getDice", diceFace, diceCount);
       });
 
+      // 주사위 굴림 결과를 방의 다른 모든 유저에게 보냄
       socket.on("diceRoll", (dResult, sum) => {
         console.log(dResult,"///", sum);
         socket.broadcast.to(roomId).emit("diceResult", dResult, sum);
       });
 
-      socket.on("disconnect", () => {
-        console.log("user disconnect: ", peerId);
-        console.log("leng :", Object.entries(users[roomId]).length);
-        if(users[roomId] && Object.entries(users[roomId]).length !== 1){
-          console.log("user-disconnected emit");
-          socket.broadcast.to(roomId).emit("user-disconnected", peerId, streamId);
-        }
-        deleteUser(roomId, userId);
-        console.log(users);
-      });
-
+      // 방장이 유저 강퇴 시
       socket.on("ignoreUser",(streamId) => {
         var user = findUserByStreamId(streamId);
         var ignoreUserSocketId = users[user.roomId][user.userId].socketId;

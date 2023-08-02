@@ -1,0 +1,66 @@
+
+.backGround{
+    background-image: url("../../public/img/배경3.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+}
+
+.videoRoomGrid{
+    margin: auto;
+}
+
+.canterLoc{
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.imgBtn{
+    position: relative;
+    bottom: 70px;
+    left: 10px;
+}
+
+.backGround button{
+    background-color: #355176;
+    color: white;
+    padding: 7px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.diceArea{
+    width: 500px;
+    position: relative;
+    top: 70px;
+    left: 100px;
+}
+
+.diceArea button,select{
+    margin: 5px;
+}
+
+.chatGrid{
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.diceImg{
+    margin: auto;
+    text-align: center;
+}
+
+.diceImg img{
+    width: 300px;
+    height: 300px;
+}
+
+.exitBtn{
+    position: relative;
+    left: 95%;
+    top: 10px;
+}
+
+.title{
+    margin-left: 20px;
+}

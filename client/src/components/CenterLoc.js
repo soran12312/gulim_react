@@ -1,7 +1,6 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import Modal from 'react-modal';
 
-
 const CenterLoc = React.forwardRef((props, ref) => {
 
     const isMaster = props.isMaster;
@@ -135,8 +134,8 @@ const CenterLoc = React.forwardRef((props, ref) => {
     return (
         <div>
             <div>
-                {isMaster && <button onClick={openSendImgModal}>이미지 보내기</button>}
-                {imgDownload && <button onClick={imgDownloadHandler}>이미지 다운로드</button>}
+                {isMaster && <button className="imgBtn" onClick={openSendImgModal}>이미지 보내기</button>}
+                {imgDownload && <button className="imgBtn" onClick={imgDownloadHandler}>이미지 다운로드</button>}
                 <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{content: {overflow: "auto", top: '10%',width: '10%', height: '10%',left: '20%'}}}>
                     <input 
                     type="file"
@@ -150,31 +149,35 @@ const CenterLoc = React.forwardRef((props, ref) => {
                     </button>
                 </Modal>
                 <br/>
-                {rolling && <img src="/img/gulim_dice_roll.gif" alt="GIF"/>}
-                {!rolling && <img src="/img/gulim_dice.png" alt="PNG"/>}
-                {result && <span>결과 : {diceResult.join(', ')} 합 : {diceSum}</span>}
+                <div className="diceImg">
+                    {rolling && <img src="/img/gulim_dice_roll.gif" alt="GIF"/>}
+                    {!rolling && <img src="/img/gulim_dice.png" alt="PNG"/>}
+                    {result && <span>결과 : {diceResult.join(', ')} 합 : {diceSum}</span>}
+                </div>
             </div>
-                {isMaster && <button onClick={() => rollDice("hidden")}>몰래 주사위 굴리기</button>}
-                {isMaster && (
-                    <span>
-                        <select ref={diceFace}>
-                            {[2, 3, 4, 6, 8, 10, 12, 16, 20, 30, 48, 60, 100].map((value) => (
-                                <option key={value} value={value}>
-                                {value}
-                                </option>
-                            ))}
-                        </select>면체 , 
-                        <select ref={diceCount}>
-                            {[1, 2, 3].map((value) => (
-                                <option key={value} value={value}>
-                                {value}
-                                </option>
-                            ))}
-                        </select>개
-                    </span>
-                )}
-                {(!isMaster && diceRoll) && <span>{myDice.diceFace}면체 , {myDice.diceCount}개</span>}
-                {(isMaster || diceRoll) && <button onClick={() => rollDice("roll")}>주사위 굴리기</button>}
+                <div className="diceArea">
+                    {isMaster && <button onClick={() => rollDice("hidden")}>몰래 주사위 굴리기</button>}
+                    {isMaster && (
+                        <span>
+                            <select ref={diceFace}>
+                                {[2, 3, 4, 6, 8, 10, 12, 16, 20, 30, 48, 60, 100].map((value) => (
+                                    <option key={value} value={value}>
+                                    {value}
+                                    </option>
+                                ))}
+                            </select>면체 , 
+                            <select ref={diceCount}>
+                                {[1, 2, 3].map((value) => (
+                                    <option key={value} value={value}>
+                                    {value}
+                                    </option>
+                                ))}
+                            </select>개
+                        </span>
+                    )}
+                    {(!isMaster && diceRoll) && <span>{myDice.diceFace}면체 , {myDice.diceCount}개</span>}
+                    {(isMaster || diceRoll) && <button onClick={() => rollDice("roll")}>주사위 굴리기</button>}
+                </div>
         </div>
     );
 });

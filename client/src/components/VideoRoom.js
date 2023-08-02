@@ -11,6 +11,7 @@ import Inventory from './Inventory';
 import StatAndSkill from './StatAndSkill';
 import Modal from 'react-modal';
 import Memo from './Memo';
+import '../css/videoRoom.css'
 
 const styles = {
   video: {
@@ -71,14 +72,14 @@ const VideoRoom = () => {
 
   // key = 연결된 유저들의 peerId, value = peer.call 객체
   const peers = useRef({});
+  const centerLoc = useRef(null);
 
+  // 소켓과 피어연결을 컴포넌트에서 참조할 수 있도록 useRef사용
   const socket = useRef(null);
   const peer = useRef(null);
 
-  const centerLoc = useRef(null);
-  
-
   useEffect(() => {
+    // 화면이 처음 랜더링될 때 1번만 소켓,피어연결 시행
     socket.current = io('https://192.168.0.68:3030');
     peer.current = new Peer({
       config: {
@@ -582,14 +583,15 @@ if(isReady){
 
   return (
     <>
-      <button onClick={closeWindow}>나가기</button>
-      <h1>{userData.room_name}</h1>
+    <div className='backGround'>
+      <button className='exitBtn' onClick={closeWindow}>나가기</button>
+      <h1 className='title'>{userData.room_name}</h1>
       <div>
-        <table>
+        <table className='videoRoomGrid'>
           <tr>
             <td></td>
             <td><video style={styles.video} autoPlay playsInline ref={(element) => (videoRefs.current[0] = element)} /></td>
-            <td rowSpan={3} colSpan={2} >
+            <td rowSpan={3} colSpan={2} className="canterLoc">
               <CenterLoc myDice={myDice} ref={centerLoc} isMaster={isMaster} diceRoll={diceRoll} diceRollClick={diceRollClick} socket={socket} getDice={getDice}/>
             </td>
             <td><video style={styles.video} autoPlay playsInline ref={(element) => (videoRefs.current[1] = element)} onClick={ignoreHandler} onMouseEnter={() =>userSetting(1)} onMouseLeave={() =>userSetting(1)}/></td>
@@ -671,6 +673,7 @@ if(isReady){
             <td colSpan={2}><Chatting socket={socket}/></td>
           </tr>
         </table>
+      </div>
       </div>
     </>
   );
