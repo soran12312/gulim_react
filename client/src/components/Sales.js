@@ -41,12 +41,13 @@ const Sales = () => {
             <div> 
               {isSale.map((product) => (
                   <td>
+                    <div className="sale_div">
                     <img src={"https://192.168.0.68:8080"+product.path} className="td_img" onClick={() => book_title_tag(product.book_num)}/><br/>
                       <span onClick={() => book_title_tag(product.book_num)} className="td_span">{product.book_title}</span>
                     <br/>
                     <span className="td_span_span">BEST</span><br/>
                     <strong className="td_span_span">{product.genre}</strong><br/>
-                    
+                    </div>
                     </td>
               ))}
             </div>
@@ -58,12 +59,13 @@ const Sales = () => {
          
             {isSale.map((product) => (
                   <td>
+                    <div className="sale_div">
                     <img src={"https://192.168.0.68:8080"+product.path}/><br/>
                       <span>{product.book_title}</span>
                     <br/>
                     <span>BEST</span><br/>
                     <strong>{product.genre}</strong><br/>
-                    
+                    </div>
                     </td>
               ))}
            

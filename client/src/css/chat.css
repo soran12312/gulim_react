@@ -65,26 +65,29 @@ text-align: center;
 
 .td_img{
   position: relative;
-  padding: auto;
-  margin: 50px;
+  padding: 5px;
+  margin: 5px;
   color: white;
-  left: 200px;
+  left: 270px;
   cursor: pointer;
 }
 .td_span{
   position: relative;
-  padding: auto;
-  margin: 50px;
+  padding: 5px;
+  margin: 5px;
   color: white;
   font-size: 20px;
-  left: 200px;
+  left: 270px;
   cursor: pointer;
 }
 .td_span_span{
   position: relative;
-  padding: auto;
-  margin: 50px;
+  padding-bottom: 130px;
+  margin: 5px;
   color: white;
   font-size: 20px;
-  left: 200px;
+  left: 270px;
+}
+.sale_div{
+ padding-bottom: 30px;
 }
