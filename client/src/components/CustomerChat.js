@@ -52,7 +52,7 @@ const CustomerChat=()=>{
         console.log(error);
       }
     }
-    //isReady라면
+    //isReady라면 
     if(isReady){
       //'socket'과 'socket.current'가 존재하고 관리자로 채팅에 참가하면
       if(isManager && socket && socket.current){

@@ -4,7 +4,7 @@ import axios from "axios";
 const Sales = () => {
   const [isSale, setSale] = useState([]);
   const [isReady, setIsReady] = useState(false);
-
+ 
   const book_title_tag=(book_num)=>{
     window.location.href = `https://192.168.0.68:8080/sale/book/book_detail?book_num=${book_num}`;
   }
