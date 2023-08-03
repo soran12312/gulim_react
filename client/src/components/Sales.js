@@ -15,6 +15,7 @@ const Sales = () => {
 
   useEffect(() => {
     const getList = async () => {
+      // 스프링에서 url 부름
       const link = "https://192.168.0.68:8080/sale/sales";
       try {
         const response = await axios.get(link);
