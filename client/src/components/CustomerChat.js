@@ -33,7 +33,7 @@ const CustomerChat=()=>{
     const getData = async () => {
       
       // 스프링에서 이 url이 불릴 때 작동하는 함수
-      const link = "https://192.168.0.68:8080/customer_service/customer_chat";  
+      const link = "https://192.168.0.68:8080/customer_service/customer_chat";    
       try {
         var result = await axios.get(link);
         console.log(result.data);
