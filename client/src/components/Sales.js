@@ -13,7 +13,7 @@ const Sales = () => {
       window.location.href = "https://192.168.0.68:8080/sale/basket";
     };
 
-  useEffect(() => {
+  useEffect(() => {   
     const getList = async () => {
       // 스프링에서 url 부름
       const link = "https://192.168.0.68:8080/sale/sales";
