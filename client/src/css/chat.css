@@ -89,5 +89,31 @@ text-align: center;
   left: 270px;
 }
 .sale_div{
- padding-bottom: 30px;
+  margin: auto;
+  padding-bottom: 30px;
+}
+
+button.slick-prev:before, button.slick-next:before {
+  width: 50px;
+  height: 50px;
+  font-size: 38px;
+  display: inline-block;
+}
+
+button.slick-prev {
+  left: -52px;
+  top: 220px;
+}
+
+button.slick-next {
+  right: 15px;
+  top: 220px;
+}
+
+.book_table {
+  margin-left: 41px;
+}
+
+.book_td {
+  padding-left: 34px;
 }

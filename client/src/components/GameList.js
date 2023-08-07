@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import GameRoom from "./GameRoom";
+import '../css/chat.css'
 
 // 방만들기, 전체방보기, 모집중인 방만보기, 관전가능한 방만 보기, 검색 버튼 css
 const buttonStyle = {
@@ -23,10 +24,7 @@ const buttonStyle = {
     display: 'flex', 
     flexDirection: 'column', 
     alignItems: 'center' , 
-    borderRadius : 'size / 2' , 
-    shadowColor : 'rgba(217,217,217,0.7)',
-    shadowOffset : {width : '10', height : '10'}, 
-    background:' rgba(217,217,217,0.7)'
+   
 };
 
 
@@ -233,10 +231,19 @@ const GameList = () => {
                         <td>게임정보</td>
                     </tr>
                 </thead>
-                {selectedRooms && selectedRooms.sort((a, b) => new Date(b.create_date) - new Date(a.create_date)).map(room => 
-                <div>
-                    <GameRoom key={room.room_num} room={room} setVideoAudio={setVideoAudio} selectHashtag={selectHashtag} goGameDetail={goGameDetail}/>
-                </div>)}
+                {selectedRooms && 
+                selectedRooms
+                    .sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+                    .map(room => 
+                    
+                        <GameRoom 
+                        key={room.room_num} 
+                        room={room} 
+                        etVideoAudio={setVideoAudio} 
+                        selectHashtag={selectHashtag} 
+                        goGameDetail={goGameDetail}/>
+                    
+                )}
             </table>
             <form onSubmit={handleSubmit}>
                 <select defaultValue={"room_name"} onChange={handleOptionChange} style={{height : '40px'}}>

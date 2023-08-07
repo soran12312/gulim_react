@@ -19,6 +19,7 @@ const Inventory = (props) => {
     const userInfo = userData.member_info.find((member) => member.id === userId);
     const refrashRoomData = props.refrashRoomData;
     const socket = props.socket;
+    const isMaster = props.isMaster;
     const [inventory,setInventory] = useState(null);
 
     const [itemStates, setItemStates] = useState(null);
@@ -200,11 +201,15 @@ const Inventory = (props) => {
                     <br/>
                     {!onModifyMoney && <span>소지금 : {userInfo && inventory && inventory.money}</span>}
                     {onModifyMoney && <span>소지금 : <input type='number' defaultValue={userInfo && inventory && inventory.money} onChange={changeMoneyVal}></input></span>}
-                    <button onClick={moneyModHandler} ref={moneyModBtn}>소지금 변경</button>
+                    {isMaster && <button onClick={moneyModHandler} ref={moneyModBtn}>소지금 변경</button>}
                     <br/><br/>
-                    <button onClick={modify}>수정</button>
-                    <button onClick={insertItem}>추가</button>
-                    <button onClick={() => setOnDelete(!onDelete)}>삭제</button>
+                    {isMaster &&
+                    <div>
+                        <button onClick={modify}>수정</button>
+                        <button onClick={insertItem}>추가</button>
+                        <button onClick={() => setOnDelete(!onDelete)}>삭제</button>
+                    </div>
+                    }
                 </div>
             }
             {(userId && onModify) && 

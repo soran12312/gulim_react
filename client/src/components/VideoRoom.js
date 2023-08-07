@@ -579,6 +579,9 @@ const VideoRoom = () => {
     window.close();
   }
 
+  const [lowOpen,setLowOpen] = useState(false);
+
+
 if(isReady){
 
   return (
@@ -618,6 +621,10 @@ if(isReady){
                   refrashRoomData={refrashRoomData} 
                   join_num={userData.member_info.find((member) => member.id === userId).join_num}
                   room_num={userData.room_num}/>
+              </Modal>
+              <Modal isOpen={lowOpen} onRequestClose={() => setLowOpen(false)} style={{content: {overflow: "auto", top: '50%',width: '20%', height: '30%',}}}>
+                <span>줄거리: {userData.plot}</span><br/>
+                <span>규칙: {userData.law}</span><br/>
               </Modal><br/>
               <button onClick={muteHandler} ref={muteBtn}>mute</button>
               <button onClick={cameraHandler} ref={cameraBtn}>화면끄기</button>
@@ -626,7 +633,7 @@ if(isReady){
               {runSTT && <button onClick={sttHandler}>음성을 텍스트로 변환</button>}
               {download && <a ref={downloadLink}></a>}
               {saveText && <button onClick={saveTextAsFile} ref={textSave}>텍스트 다운로드</button>}
-              <button>?</button>
+              <button onClick={()=>setLowOpen(true)}>?</button>
             </td>
             }
             {isMaster &&
@@ -637,7 +644,12 @@ if(isReady){
                   refrashRoomData={refrashRoomData} 
                   join_num={0}
                   room_num={userData.room_num}/>
-              </Modal><br/>
+              </Modal>
+              <Modal isOpen={lowOpen} onRequestClose={() => setLowOpen(false)} style={{content: {overflow: "auto", top: '50%',width: '20%', height: '30%',}}}>
+                <span>줄거리: {userData.plot}</span><br/>
+                <span>규칙: {userData.law}</span><br/>
+              </Modal>
+              <br/>
               <button onClick={muteHandler} ref={muteBtn}>mute</button>
               <button onClick={cameraHandler} ref={cameraBtn}>화면끄기</button>
               <button onClick={()=> setModalIsOpen(true)}>메모</button>
@@ -646,7 +658,7 @@ if(isReady){
               {download && <a ref={downloadLink}></a>}
               {saveText && <button onClick={saveTextAsFile} ref={textSave}>텍스트 다운로드</button>}
               <button onClick={ignoreSelectBtn}>강퇴</button>
-              <button>?</button>
+              <button onClick={()=>setLowOpen(true)}>?</button>
             </td>
             }
             <td>다른사람의 캐릭터정보
@@ -663,11 +675,11 @@ if(isReady){
             <td>인벤토리
               {isMaster && 
               <div style={{ height: "270px", width:"320px", overflow: "auto", wordWrap: 'break-word' }}>
-                <Inventory socket={socket} userData={userData} userId={mouseHoverUser} refrashRoomData={refrashRoomData}/>
+                <Inventory isMaster={isMaster} socket={socket} userData={userData} userId={mouseHoverUser} refrashRoomData={refrashRoomData}/>
               </div>}
               {!isMaster && 
               <div style={{ height: "270px", width:"320px", overflow: "auto", wordWrap: 'break-word' }}>
-                <Inventory socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/>
+                <Inventory isMaster={isMaster} socket={socket} userData={userData} userId={userId} refrashRoomData={refrashRoomData}/>
               </div>}
             </td>
             <td colSpan={2}><Chatting socket={socket}/></td>

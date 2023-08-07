@@ -3,7 +3,8 @@ const cellStyle = {
     padding: '10px',
     fontSize: '14px',
     textAlign: 'center',
-    padding : '20px'
+    padding : '20px',
+    width: '200px'
 };
 const cellStyle2 = {
     padding: '10px',
